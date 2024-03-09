@@ -33,7 +33,19 @@ class MenuSeeeder extends Seeder
                 'permission' => null,
                 'created_at' => null,
                 'updated_at' => '2024-03-02 04:43:58',
+            ],
+            [
+                'parent_id' => 0,
+                'order' => 3,
+                'title' => 'Suppliers',
+                'icon' => 'icon-building',
+                'uri' => 'suppliers',
+                'permission' => null,
+                'created_at' => null,
+                'updated_at' => '2024-03-02 04:43:58',
             ]
+
+
         ];
 
         DB::table('admin_menu')->insert($data);
