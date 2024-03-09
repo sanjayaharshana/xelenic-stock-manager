@@ -1,0 +1,1 @@
+# xelenic-stock-manager
