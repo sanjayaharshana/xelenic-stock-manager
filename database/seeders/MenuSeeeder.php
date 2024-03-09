@@ -43,7 +43,18 @@ class MenuSeeeder extends Seeder
                 'permission' => null,
                 'created_at' => null,
                 'updated_at' => '2024-03-02 04:43:58',
+            ],
+            [
+                'parent_id' => 0,
+                'order' => 4,
+                'title' => 'Purchase Orders',
+                'icon' => 'icon-notes-medical',
+                'uri' => 'purchase-orders',
+                'permission' => null,
+                'created_at' => null,
+                'updated_at' => '2024-03-02 04:43:58',
             ]
+
 
 
         ];
