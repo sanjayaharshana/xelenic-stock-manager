@@ -2,6 +2,9 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Selectable\PurchaseOrderLinesSelectable;
+use App\Models\Products;
+use App\Models\Supplier;
 use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
@@ -27,7 +30,7 @@ class PurchaseOrderController extends AdminController
         $grid = new Grid(new PurchaseOrder());
 
         $grid->column('id', __('Id'));
-        $grid->column('supplier_id', __('Supplier id'));
+        $grid->column('supplier_id', __('Supplier'));
         $grid->column('grand_total', __('Grand total'));
         $grid->column('status', __('Status'));
         $grid->column('created_by', __('Created by'));
@@ -55,7 +58,7 @@ class PurchaseOrderController extends AdminController
         $show = new Show(PurchaseOrder::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('supplier_id', __('Supplier id'));
+        $show->field('supplier_id', __('Supplier'));
         $show->field('grand_total', __('Grand total'));
         $show->field('status', __('Status'));
         $show->field('created_by', __('Created by'));
@@ -81,18 +84,65 @@ class PurchaseOrderController extends AdminController
     {
         $form = new Form(new PurchaseOrder());
 
-        $form->textarea('supplier_id', __('Supplier id'));
-        $form->textarea('grand_total', __('Grand total'));
-        $form->text('status', __('Status'));
-        $form->textarea('created_by', __('Created by'));
-        $form->text('payment_terms', __('Payment terms'));
-        $form->datetime('delivery_date', __('Delivery date'))->default(date('Y-m-d H:i:s'));
-        $form->textarea('remarks', __('Remarks'));
-        $form->textarea('approved_by', __('Approved by'));
-        $form->datetime('approved_at', __('Approved at'))->default(date('Y-m-d H:i:s'));
-        $form->textarea('rejected_by', __('Rejected by'));
-        $form->datetime('rejected_at', __('Rejected at'))->default(date('Y-m-d H:i:s'));
 
+        $form->tab('Invoice', function ($form) {
+
+            $supplier = Supplier::where('status', 'active')
+                ->select('supplier_name','id')
+                ->pluck('supplier_name','id');
+
+            $form->select('supplier_id', __('Supplier'))->options($supplier)->required();
+
+            $form->text('grand_total', __('Grand total'))->readonly();
+            $form->select('status', __('Status'))->options(['Pending', 'Approved', 'Rejected'])->required();
+
+            $form->select('created_by', __('Created by'))->options([auth()->user()->name])->required();
+
+            $form->radio('payment_terms', __('Payment terms'))
+                ->options([
+                    1 =>'Check',
+                    2 =>'Cash',
+                ])->when(1, function (Form $form) {
+
+                    $form->date('check_due_date','Check Due Date');
+
+                })->when(2, function (Form $form) {
+
+
+
+                });
+
+            $products = Products::where('status', 'active')
+                ->select('name','id')
+                ->pluck('name','id');
+
+            $form->select('product_id', __('Product'))->options($products)->required();
+            $form->html(view('welcome'));
+
+        })->tab('Others', function ($form) {
+
+            $form->text('payment_terms', __('Payment terms'));
+            $form->datetime('delivery_date', __('Delivery date'))->default(date('Y-m-d H:i:s'));
+            $form->textarea('remarks', __('Remarks'));
+            $form->textarea('approved_by', __('Approved by'));
+            $form->datetime('approved_at', __('Approved at'))->default(date('Y-m-d H:i:s'));
+            $form->textarea('rejected_by', __('Rejected by'));
+            $form->datetime('rejected_at', __('Rejected at'))->default(date('Y-m-d H:i:s'));
+
+
+        })->tab('Payments', function ($form) {
+
+
+
+        });
+
+
+
+
+
+
+
+//
         return $form;
     }
 }
