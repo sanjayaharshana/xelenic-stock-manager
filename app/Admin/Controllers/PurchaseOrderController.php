@@ -116,7 +116,6 @@ class PurchaseOrderController extends AdminController
                 ->select('name','id')
                 ->pluck('name','id');
 
-            $form->select('product_id', __('Product'))->options($products)->required();
             $form->html(view('welcome'));
 
         })->tab('Others', function ($form) {
