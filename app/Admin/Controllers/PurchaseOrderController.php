@@ -93,7 +93,7 @@ class PurchaseOrderController extends AdminController
 
             $form->select('supplier_id', __('Supplier'))->options($supplier)->required();
 
-            $form->text('grand_total', __('Grand total'))->readonly();
+            $form->text('grand_total', __('Grand total'))->readonly()->value(0.00);
             $form->select('status', __('Status'))->options(['Pending', 'Approved', 'Rejected'])->required();
 
             $form->select('created_by', __('Created by'))->options([auth()->user()->name])->required();

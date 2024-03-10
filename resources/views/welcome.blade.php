@@ -11,7 +11,7 @@
                <div class="col-md-4">
                    <small>Select Product</small>
                    <select id="item-search" class="form-control">
-                       <option value=""></option>
+                       <option value="" selected></option>
                    </select>
                </div>
                 <div class="col-md-2">
@@ -165,6 +165,10 @@
                 return;
             }
 
+            if(itemId === ''){
+                alert('Please select an item');
+                return;
+            }
 
 
             $.ajax({
@@ -190,10 +194,11 @@
         function addProductLine(itemId,itemName, qty, discount, unitPrice) {
             discount = parseFloat(discount); // Convert string to a floating-point number
             unitPrice = parseFloat(unitPrice); // Convert string to a floating-point number
+            var uniqueNumber = Date.now() + Math.floor(Math.random() * 1000);
 
             console.log('serve');
             var total = (qty * unitPrice) - discount;
-            var newRow = '<tr data-key="1" class="row-1">' +
+            var newRow = '<tr id='+ uniqueNumber +' data-key="1" class="row-1">' +
                             '<td class="column-__row_selector__">' +
                                 '<input type="checkbox" class="grid-row-checkbox form-check-input row-selector" data-id="1" onchange="admin.grid.select_row(event,this)" autocomplete="off">' +
                             '</td>' +
@@ -205,17 +210,35 @@
                               '<td class="column-updated_at"><input type="text" value="'+ total  +'"></td>' +
                               '<td class="column-__actions__">' +
                               '<div class="__actions__div ">' +
-                                  '<a href="http://localhost:8000/admin/auth/users/1/edit" class="">' +
-                                    '<i class="icon-pen"></i><span class="label">Edit</span>' +
-                                  '</a>' +
-                                  '<a href="http://localhost:8000/admin/auth/users/1" class="">'+
-                                    '<i class="icon-eye"></i><span class="label">Show</span>' +
+                                  '<a onclick="deleteFunction('+ total +','+ uniqueNumber +')" class="">'+
+                                    '<i class="icon-trash"></i><span class="label">Dlete</span>' +
                                   '</a>' +
                               '</div>' +
                               '</td>' +
                             '</tr>';
             $('#product_lines').append(newRow);
+            grandTotalUpdate(total);
         }
 
+        function grandTotalUpdate(total)
+        {
+            var grandTotalValue = $('#grand_total').val();
+            grandTotalValue = parseFloat(grandTotalValue) + parseFloat(total);
+            grandTotalValue = parseFloat(grandTotalValue).toFixed(2);
+            $('#grand_total').val(grandTotalValue);
+        }
+
+
     });
+
+    function deleteFunction(price,id)
+    {
+        var grandTotalValue = parseFloat(price).toFixed(2);
+        var price = $('#grand_total').val();
+        var minusprice = parseFloat(price) - parseFloat(grandTotalValue);
+        $('#grand_total').val(minusprice);
+
+      $('#'+id).remove();
+    }
+
 </script>
