@@ -9,21 +9,26 @@
         <div class="container-fluid card-header no-border">
             <div class="row" style="background: gainsboro;padding-top: 10px;padding-bottom: 10px;">
                <div class="col-md-4">
+                   <small>Select Product</small>
                    <select id="item-search" class="form-control">
-                       <option value="">Search for an item...</option>
+                       <option value=""></option>
                    </select>
                </div>
                 <div class="col-md-2">
-                    <input type="text" class="form-control" placeholder="Qty" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
+                    <small>Select Qty</small>
+                    <input id='qty_add_product_box' value="1" type="number" max="10000" min="1" class="form-control" placeholder="Qty" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
                 </div>
                 <div class="col-md-2">
-                    <input type="text" class="form-control" placeholder="Discount" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
+                    <small>Discount</small>
+                    <input id="discount_add_product_box" type="text" value="0.00" class="form-control" placeholder="Discount" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
                 </div>
                 <div class="col-md-2">
-                    <input id="unit_price" type="text" class="form-control" placeholder="Unit" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
+                    <small>Unit Price</small>
+                    <input id="unit_price" type="text" class="form-control" value="0.00" placeholder="Unit" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
                 </div>
                 <div class="col-md-2">
-                    <button class="btn btn-primary">Add Product</button>
+                    <br>
+                    <a id="add_products_pruchase_line" class="btn btn-primary">Add Product</a>
 
                 </div>
             </div>
@@ -73,23 +78,7 @@
                 </thead>
 
                 <tbody id="product_lines">
-                    <tr data-key="1" class="row-1">
-                        <td class="column-__row_selector__">
-                            <input type="checkbox" class="grid-row-checkbox form-check-input row-selector" data-id="1" onchange="admin.grid.select_row(event,this)" autocomplete="off">
-                        </td>
-                        <td class="column-id">1</td>
-                        <td class="column-prduct_name">PineApple</td>
-                        <td class="column-qrt">222</td>
-                        <td class="column-discount">0.00</td>
-                        <td class="column-created_at">10.00</td>
-                        <td class="column-updated_at"><input type="text" value="22200.00"></td>
-                        <td class="column-__actions__">
-                            <div class="__actions__div ">
-                                <a href="http://localhost:8000/admin/auth/users/1/edit" class=""><i class="icon-pen"></i><span class="label">Edit</span></a>
-                                <a href="http://localhost:8000/admin/auth/users/1" class=""><i class="icon-eye"></i><span class="label">Show</span></a>
-                            </div>
-                        </td>
-                    </tr>
+
 
 
 
@@ -142,5 +131,91 @@
                 }
             });
         });
+
+        $('#add_products_pruchase_line').click(function() {
+            var itemName; // Declare itemName globally
+
+            // Your code here
+            var item = $('#item-search')
+
+
+
+
+
+            var itemId = item.val();
+            var qty = $('#qty_add_product_box').val();
+            var discount = $('#discount_add_product_box').val();
+            var unitPrice = $('#unit_price').val();
+
+            // Validate the fields
+            if (item === ''){
+                alert('Please select an item.');
+                return;
+            }
+            if (qty === '' || qty === "0") {
+                alert('Please enter a quantity.');
+                return;
+            }
+            if (discount === '') {
+                alert('Please enter a discount.');
+                return;
+            }
+            if (unitPrice === '') {
+                alert('Please enter a unit price.');
+                return;
+            }
+
+
+
+            $.ajax({
+                url: '{{ route("get_product_details") }}',
+                type: 'GET',
+                data: {
+                    id: itemId
+                },
+                success: function(result) {
+                    var itemName = result.name;
+                    // Process the result as needed
+                    addProductLine(itemId, itemName, qty, discount, unitPrice);
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+
+            console.log(itemName);
+
+        });
+
+        function addProductLine(itemId,itemName, qty, discount, unitPrice) {
+            discount = parseFloat(discount); // Convert string to a floating-point number
+            unitPrice = parseFloat(unitPrice); // Convert string to a floating-point number
+
+            console.log('serve');
+            var total = (qty * unitPrice) - discount;
+            var newRow = '<tr data-key="1" class="row-1">' +
+                            '<td class="column-__row_selector__">' +
+                                '<input type="checkbox" class="grid-row-checkbox form-check-input row-selector" data-id="1" onchange="admin.grid.select_row(event,this)" autocomplete="off">' +
+                            '</td>' +
+                              '<td class="column-id">'+ itemId +'</td>'+
+                              '<td class="column-prduct_name">'+ itemName +'</td>' +
+                              '<td class="column-qrt">'+ qty +'</td>' +
+                              '<td class="column-discount">' + discount + '</td>' +
+                              '<td class="column-created_at">'+ unitPrice +'</td>' +
+                              '<td class="column-updated_at"><input type="text" value="'+ total  +'"></td>' +
+                              '<td class="column-__actions__">' +
+                              '<div class="__actions__div ">' +
+                                  '<a href="http://localhost:8000/admin/auth/users/1/edit" class="">' +
+                                    '<i class="icon-pen"></i><span class="label">Edit</span>' +
+                                  '</a>' +
+                                  '<a href="http://localhost:8000/admin/auth/users/1" class="">'+
+                                    '<i class="icon-eye"></i><span class="label">Show</span>' +
+                                  '</a>' +
+                              '</div>' +
+                              '</td>' +
+                            '</tr>';
+            $('#product_lines').append(newRow);
+        }
+
     });
 </script>

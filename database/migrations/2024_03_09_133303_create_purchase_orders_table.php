@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('status', ['Pending', 'Approved', 'Rejected']);
             $table->text('created_by');
             $table->enum('payment_terms', ['Cash', 'Credit']);
+            $table->date('order_date')->nullable();
             $table->timestamp('delivery_date')->nullable();
             $table->text('remarks')->nullable();
             $table->text('approved_by')->nullable();
