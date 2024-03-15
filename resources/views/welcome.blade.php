@@ -1,30 +1,24 @@
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-
-
 <div class="col-md-12">
     <div class="card p-0">
         <div class="container-fluid card-header no-border">
             <div class="row" style="background: gainsboro;padding-top: 10px;padding-bottom: 10px;">
                <div class="col-md-4">
                    <small>Select Product</small>
-                   <select id="item-search" class="form-control">
+                   <select id="item-search" class="form-control" name="dialog_products">
                        <option value="" selected></option>
                    </select>
                </div>
                 <div class="col-md-2">
                     <small>Select Qty</small>
-                    <input id='qty_add_product_box' value="1" type="number" max="10000" min="1" class="form-control" placeholder="Qty" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
+                    <input id='qty_add_product_box' name="dialog_qty" value="1" type="number" max="10000" min="1" class="form-control" placeholder="Qty" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
                 </div>
                 <div class="col-md-2">
                     <small>Discount</small>
-                    <input id="discount_add_product_box" type="text" value="0.00" class="form-control" placeholder="Discount" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
+                    <input id="discount_add_product_box" name="dialog_discount" type="text" value="0.00" class="form-control" placeholder="Discount" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
                 </div>
                 <div class="col-md-2">
                     <small>Unit Price</small>
-                    <input id="unit_price" type="text" class="form-control" value="0.00" placeholder="Unit" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
+                    <input id="unit_price" type="text" class="form-control" name="dialog_unit" value="0.00" placeholder="Unit" style="height: 29px;border-style: solid;border-color: #aaaaaa;font-size: 13px;">
                 </div>
                 <div class="col-md-2">
                     <br>
@@ -34,30 +28,27 @@
             </div>
         </div>
         <div class="with-border collapse  filter-box" id="filter-box">
-            <form action="http://localhost:8000/admin/auth/users" class="form pt-0 form-horizontal has-ajax-handler" pjax-container="" method="get" autocomplete="off">
+            <div class="row mb-0">
+                <div class="col-md-12">
+                    <div class="card-body">
+                        <div class="fields-group">
+                            <div class="form-group row">
+                                <label class="col-sm-2 form-label"> ID</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
 
-                <div class="row mb-0">
-                    <div class="col-md-12">
-                        <div class="card-body">
-                            <div class="fields-group">
-                                <div class="form-group row">
-                                    <label class="col-sm-2 form-label"> ID</label>
-                                    <div class="col-sm-8">
-                                        <div class="input-group">
-
-                                            <div class="input-group-text with-icon">
-                                                <i class="icon-pencil-alt"></i>
-                                            </div>
-
-                                            <input type="text" class="form-control id" placeholder="ID" name="id" value="">
+                                        <div class="input-group-text with-icon">
+                                            <i class="icon-pencil-alt"></i>
                                         </div>
+
+                                        <input type="text" class="form-control id" placeholder="ID" name="id" value="">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
 
 
@@ -202,12 +193,12 @@
                             '<td class="column-__row_selector__">' +
                                 '<input type="checkbox" class="grid-row-checkbox form-check-input row-selector" data-id="1" onchange="admin.grid.select_row(event,this)" autocomplete="off">' +
                             '</td>' +
-                              '<td class="column-id">'+ itemId +'</td>'+
-                              '<td class="column-prduct_name">'+ itemName +'</td>' +
-                              '<td class="column-qrt">'+ qty +'</td>' +
-                              '<td class="column-discount">' + discount + '</td>' +
-                              '<td class="column-created_at">'+ unitPrice +'</td>' +
-                              '<td class="column-updated_at"><input type="text" value="'+ total  +'"></td>' +
+                              '<td class="column-id"><input name="itemId[]" type="hidden" value="'+ itemId  +'">'+ itemId +'</td>'+
+                              '<td class="column-prduct_name"><input name="itemName[]" type="hidden" value="'+ itemName  +'">'+ itemName +'</td>' +
+                              '<td class="column-qrt"><input name="qty[]" type="hidden" value="'+ qty  +'">'+ qty +'</td>' +
+                              '<td class="column-discount"><input name="discount[]" type="hidden" value="'+ discount  +'"></td>' + discount + '</td>' +
+                              '<td class="column-created_at"><input type="text" name="unitprice[]" value="'+ unitPrice +'" readonly></td>' +
+                              '<td class="column-updated_at"><input name="total[]" type="text" value="'+ total  +'"></td>' +
                               '<td class="column-__actions__">' +
                               '<div class="__actions__div ">' +
                                   '<a onclick="deleteFunction('+ total +','+ uniqueNumber +')" class="">'+

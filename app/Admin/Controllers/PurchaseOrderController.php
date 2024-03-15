@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Admin\Selectable\PurchaseOrderLinesSelectable;
 use App\Models\Products;
 use App\Models\Supplier;
+use OpenAdmin\Admin\Admin;
 use OpenAdmin\Admin\Controllers\AdminController;
 use OpenAdmin\Admin\Form;
 use OpenAdmin\Admin\Grid;
@@ -37,10 +38,6 @@ class PurchaseOrderController extends AdminController
         $grid->column('payment_terms', __('Payment terms'));
         $grid->column('delivery_date', __('Delivery date'));
         $grid->column('remarks', __('Remarks'));
-        $grid->column('approved_by', __('Approved by'));
-        $grid->column('approved_at', __('Approved at'));
-        $grid->column('rejected_by', __('Rejected by'));
-        $grid->column('rejected_at', __('Rejected at'));
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
 
@@ -65,12 +62,6 @@ class PurchaseOrderController extends AdminController
         $show->field('payment_terms', __('Payment terms'));
         $show->field('delivery_date', __('Delivery date'));
         $show->field('remarks', __('Remarks'));
-        $show->field('approved_by', __('Approved by'));
-        $show->field('approved_at', __('Approved at'));
-        $show->field('rejected_by', __('Rejected by'));
-        $show->field('rejected_at', __('Rejected at'));
-        $show->field('created_at', __('Created at'));
-        $show->field('updated_at', __('Updated at'));
 
         return $show;
     }
@@ -82,8 +73,13 @@ class PurchaseOrderController extends AdminController
      */
     protected function form()
     {
-        $form = new Form(new PurchaseOrder());
 
+
+        Admin::js('https://code.jquery.com/jquery-3.6.0.min.js');
+        Admin::css('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
+        Admin::js('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js');
+
+        $form = new Form(new PurchaseOrder());
 
         $form->tab('Invoice', function ($form) {
 
@@ -92,11 +88,14 @@ class PurchaseOrderController extends AdminController
                 ->pluck('supplier_name','id');
 
             $form->select('supplier_id', __('Supplier'))->options($supplier)->required();
-
-            $form->text('grand_total', __('Grand total'))->readonly()->value(0.00);
-            $form->select('status', __('Status'))->options(['Pending', 'Approved', 'Rejected'])->required();
-
             $form->select('created_by', __('Created by'))->options([auth()->user()->name])->required();
+
+            $products = Products::where('status', 'active')
+                ->select('name','id')
+                ->pluck('name','id');
+
+            $form->html(view('welcome'));
+            $form->text('grand_total', __('Grand total'))->readonly()->value(0.00);
 
             $form->radio('payment_terms', __('Payment terms'))
                 ->options([
@@ -104,7 +103,7 @@ class PurchaseOrderController extends AdminController
                     2 =>'Cash',
                 ])->when(1, function (Form $form) {
 
-                    $form->date('check_due_date','Check Due Date');
+                    $form->date('check_due_date','Check Due Date')->required();
 
                 })->when(2, function (Form $form) {
 
@@ -112,36 +111,20 @@ class PurchaseOrderController extends AdminController
 
                 });
 
-            $products = Products::where('status', 'active')
-                ->select('name','id')
-                ->pluck('name','id');
-
-            $form->html(view('welcome'));
-
         })->tab('Others', function ($form) {
 
-            $form->text('payment_terms', __('Payment terms'));
+            $form->text('status', __('Status'))->value('pending');
             $form->datetime('delivery_date', __('Delivery date'))->default(date('Y-m-d H:i:s'));
             $form->textarea('remarks', __('Remarks'));
             $form->textarea('approved_by', __('Approved by'));
             $form->datetime('approved_at', __('Approved at'))->default(date('Y-m-d H:i:s'));
             $form->textarea('rejected_by', __('Rejected by'));
             $form->datetime('rejected_at', __('Rejected at'))->default(date('Y-m-d H:i:s'));
+        })->submitted(function (Form $form) {
 
-
-        })->tab('Payments', function ($form) {
-
-
+        })->saving(function (Form $form) {
 
         });
-
-
-
-
-
-
-
-//
         return $form;
     }
 }
